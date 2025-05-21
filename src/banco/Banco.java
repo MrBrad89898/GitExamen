@@ -15,13 +15,15 @@ public class Banco implements Serializable {
     private static final long serialVersionUID = 1L; 
     private String nombre;
     private final Cuenta[] cuentas;
-    private int NumeroCuentas;
-    private static final int MaxCuentas = 100;
+    private int numeroCuentas;
+    private static final int maxCuentas = 100;
+    private static final String ERROR_LEER_ARCHIVO = "Se ha producido un error al leer el archivo: ";
+
 
     public Banco(String nombre) {
         this.nombre = nombre;
-        cuentas = new Cuenta[MaxCuentas];
-        this.NumeroCuentas = 0;
+        cuentas = new Cuenta[maxCuentas];
+        this.numeroCuentas = 0;
     }
 
     // Método para serializar el curso
@@ -31,7 +33,7 @@ public class Banco implements Serializable {
             //System.out.println("Curso serializado correctamente.");
         }
          catch (IOException e) {
-            throw new IOException("Se ha producido un error al leer el archivo:" + nombreArchivo);
+            throw new IOException(ERROR_LEER_ARCHIVO + nombreArchivo);
         }
 
     }
@@ -43,7 +45,7 @@ public class Banco implements Serializable {
             banco = (Banco) in.readObject();
             //System.out.println("Curso deserializado correctamente.");
         } catch (IOException e) {
-            throw new IOException("Se ha producido un error al leer el archivo:" + nombreArchivo);
+            throw new IOException(ERROR_LEER_ARCHIVO + nombreArchivo);
         } catch (ClassNotFoundException e) {
             throw new ClassNotFoundException("Se ha producido un error al abir el archivo:" + nombreArchivo);
 
@@ -53,12 +55,12 @@ public class Banco implements Serializable {
 
     
     public boolean agregarCuenta(String codigo, String titular, String dni) {
-        if (this.NumeroCuentas >= MaxCuentas) // no caben más cuentas, la tabla está llena
+        if (this.numeroCuentas >= maxCuentas) // no caben más cuentas, la tabla está llena
         {
             return false;
         } else {
-            this.cuentas[NumeroCuentas] = new Cuenta(codigo, titular, dni);
-            NumeroCuentas++;
+            this.cuentas[numeroCuentas] = new Cuenta(codigo, titular, dni);
+            numeroCuentas++;
             return true;
         }
     }
@@ -66,11 +68,11 @@ public class Banco implements Serializable {
     public boolean eliminarCuenta(String codigo) {
         int pos = this.buscarCuenta(codigo);
         if (pos >= 0) {
-            for (int i = pos; i < NumeroCuentas - 1; i++) {
+            for (int i = pos; i < numeroCuentas - 1; i++) {
                 cuentas[i] = cuentas[i + 1];
             }
-            cuentas[NumeroCuentas - 1] = null; 
-            this.NumeroCuentas--;
+            cuentas[numeroCuentas - 1] = null; 
+            this.numeroCuentas--;
             return true;
         } else {
             return false;
@@ -79,7 +81,7 @@ public class Banco implements Serializable {
 
     private int buscarCuenta(String codigo) {
         // se busca secuencialmente la cuenta con un código y se devuelve su posición en la tabla    
-        for (int i = 0; i < NumeroCuentas; i++) {
+        for (int i = 0; i < numeroCuentas; i++) {
             if (cuentas[i].getIban().equals(codigo)) {
                 return i;
             }
@@ -133,7 +135,7 @@ public class Banco implements Serializable {
 
     private Cuenta localizarCuenta(String codigo) {
         // se busca secuencialmente la cuenta con un código       
-         {for (int i=0;i<this.NumeroCuentas;i++){
+         {for (int i=0;i<this.numeroCuentas;i++){
             if (cuentas[i].getIban().equals(codigo)) 
                 return cuentas[i];
             }
@@ -144,7 +146,7 @@ public class Banco implements Serializable {
     public StringBuilder mostrarCuentas() {
         StringBuilder salida = new StringBuilder("");
 
-        for (int i=0;i<this.NumeroCuentas;i++){
+        for (int i=0;i<this.numeroCuentas;i++){
             
             salida.append(cuentas[i].toString());
             salida.append("\n");
@@ -154,8 +156,8 @@ public class Banco implements Serializable {
 
     public void mostrarDatos() {
         System.out.println(this.nombre);
-        System.out.println("Cuentas actuales " + this.NumeroCuentas);
-        for (int i=0;i<this.NumeroCuentas;i++){
+        System.out.println("Cuentas actuales " + this.numeroCuentas);
+        for (int i=0;i<this.numeroCuentas;i++){
             System.out.print(cuentas[i].toString());
             System.out.println("");
         }
@@ -168,7 +170,7 @@ public class Banco implements Serializable {
         StringBuilder salida = new StringBuilder("");
         salida.append("   Código de cuenta               Titular                  DNI       Saldo     \n");
         salida.append("======================== ============================== ========= =============\n");
-        for (int i=0;i<this.NumeroCuentas;i++){
+        for (int i=0;i<this.numeroCuentas;i++){
             salida.append(cuentas[i].toString());
             salida.append("\n");
             totalSaldo += cuentas[i].getSaldo();
@@ -183,7 +185,7 @@ public class Banco implements Serializable {
 
     public void cargarDatos() {
         String cuenta, titular, dni;
-        for (int i = 0; i < MaxCuentas; i++) {
+        for (int i = 0; i < maxCuentas; i++) {
             cuenta = String.format("Cuenta%3d", i);
             titular = String.format("Titular %3d", i);
             char letra=Utilidades.calcularLetraNIF(i);
@@ -202,11 +204,11 @@ public class Banco implements Serializable {
     }
 
     public int getNumeroCuentas() {
-        return NumeroCuentas;
+        return numeroCuentas;
     }
 
     public void setNumCuentas(int numCuentas) {
-        this.NumeroCuentas = numCuentas;
+        this.numeroCuentas = numCuentas;
     }
 
 }
